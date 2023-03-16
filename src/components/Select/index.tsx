@@ -15,16 +15,22 @@ type SelectProps = ComponentProps<typeof FilterInput> & {
     value: string | number
     label: string
   }[]
+  variant?: 'primary' | 'secondary'
 }
 
-export function Select({ label, name, options }: SelectProps) {
+export function Select({
+  label,
+  name,
+  variant = 'primary',
+  options,
+}: SelectProps) {
   return (
     <Filter>
-      <FilterLabel htmlFor={name}>{label}</FilterLabel>
+      {label && <FilterLabel htmlFor={name}>{label}</FilterLabel>}
       <FilterWrapper>
-        <FilterInput name={name} id={name}>
+        <FilterInput name={name} id={name} variant={variant}>
           <FilterInputOption value="" disabled selected>
-            Selecione
+            Selecione dfsdfsdf
           </FilterInputOption>
           {options.map((option) => {
             return (

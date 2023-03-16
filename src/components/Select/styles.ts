@@ -4,6 +4,7 @@ export const Filter = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 280px;
 `
 
 export const FilterLabel = styled.label`
@@ -23,14 +24,19 @@ export const FilterWrapper = styled.div`
   }
 `
 
-export const FilterInput = styled.select`
+interface FilterInputProps {
+  variant?: 'primary' | 'secondary'
+}
+
+export const FilterInput = styled.select<FilterInputProps>`
   width: 100%;
   height: 60px;
   font-size: 16px;
   line-height: 19.2px;
   font-weight: 800;
   color: #ffffff;
-  background-color: #f75f64;
+  background-color: ${({ variant, theme }) =>
+    variant === 'primary' ? theme.colors['red-200'] : theme.colors['red-400']};
   border-radius: 15px;
   border: none;
   outline: none;
