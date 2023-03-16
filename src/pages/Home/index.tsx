@@ -13,5 +13,5 @@ export function Home() {
     // TO DO
   }
 
-  return <Container>{/* COMECE POR AQUI */}</Container>
+  return <Container></Container>
 }
