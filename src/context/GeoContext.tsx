@@ -1,7 +1,10 @@
-import { ICitiesDTO, ICitysRequest } from '@/interfaces/Cities'
-import { IStateDTO, IStatesRequest } from '@/interfaces/State'
-import { api } from '@/utils/api'
 import { createContext, ReactNode, useEffect, useState } from 'react'
+
+import { api } from '@/utils/api'
+
+import { IPets, IRequestPets } from '@/interfaces/IPets'
+import { ICity, ICitysRequest } from '@/interfaces/Cities'
+import { IStateDTO, IStatesRequest } from '@/interfaces/State'
 
 interface GeoProviderProps {
   children: ReactNode
@@ -9,8 +12,8 @@ interface GeoProviderProps {
 
 interface GeoContextDTO {
   states: IStateDTO[] | []
-  cities: ICitiesDTO[] | []
-  pets: []
+  cities: ICity[] | []
+  pets: IPets[] | []
   getCities: (stateUF: string) => Promise<void>
   getPets: (city: string) => Promise<void>
 }
@@ -19,43 +22,40 @@ export const GeoContext = createContext<GeoContextDTO>({} as GeoContextDTO)
 
 export const GeoProvider = ({ children }: GeoProviderProps) => {
   const [states, setStates] = useState<IStateDTO[]>([])
-  const [cities, setCities] = useState<ICitiesDTO[]>([])
-  const [pets, setPets] = useState<[]>([])
+  const [cities, setCities] = useState<ICity[]>([])
+  const [pets, setPets] = useState<IPets[]>([])
 
   async function getStates() {
-    console.log('GET STATES => ')
     try {
-      const response = await api.get<IStatesRequest>('/location/states')
+      const { data } = await api.get<IStatesRequest>('/location/states')
 
-      const treatedStatesResponse = response.data.states.map((state) => {
+      const responseStates = data.states.map((state) => {
         return {
           label: state.sigla,
           value: state.sigla,
         }
       })
 
-      setStates(treatedStatesResponse)
+      setStates(responseStates)
     } catch (error) {
       console.log(error)
     }
   }
 
   async function getCities(stateUF: string) {
-    console.log('GET CITIES => ')
-
     try {
-      const response = await api.get<ICitysRequest>(
+      const { data } = await api.get<ICitysRequest>(
         `/location/citys/${stateUF}`,
       )
 
-      const treatedCitiesResponse = response.data.citys.map((city) => {
+      const responseCities = data.citys.map((city) => {
         return {
           label: city.name,
           value: city.name,
         }
       })
 
-      setCities(treatedCitiesResponse)
+      setCities(responseCities)
     } catch (error) {
       console.log(error)
     }
@@ -64,11 +64,9 @@ export const GeoProvider = ({ children }: GeoProviderProps) => {
   async function getPets(city: string) {
     console.log('GET PETS => ')
 
-    console.log(`/pets/${city}`)
     try {
-      const response = await api.get(`/pets/${city}`)
+      const response = await api.get<IRequestPets>(`/pets/${city}`)
 
-      console.log(response.data.pets)
       setPets(response.data.pets)
     } catch (error) {
       console.log(error)

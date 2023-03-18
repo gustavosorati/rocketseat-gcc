@@ -10,7 +10,7 @@ export interface IPets {
   photo: string
   photo_url: string
   size: string
-  type: string
+  type: 'dog' | 'cat'
 }
 
 export interface IRequestPets {

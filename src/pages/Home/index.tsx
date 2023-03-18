@@ -1,15 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import { GeoContext } from '@/context/GeoContext'
-import { FormEvent, useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 
 import { Button } from '@/components/Button'
-import { Select } from '@/components/Select'
 
 import logoSvg from '../../assets/icons/logo.svg'
 
-import { Container, Content, Left, Right } from './styles'
+import { Container, Content, Header, Banner } from './styles'
+import { Select } from '@/components/Select'
 
 export function Home() {
+  const navigate = useNavigate()
   const { states, cities, getCities, getPets } = useContext(GeoContext)
 
   const [state, setState] = useState('')
@@ -30,35 +31,27 @@ export function Home() {
 
     try {
       await getPets(city)
+
+      navigate(`/map`, {
+        state: {
+          uf: state,
+          city,
+        },
+      })
     } catch (error) {}
-  }
-
-  const navigate = useNavigate()
-
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-
-    await handleSearchPets()
-
-    navigate(`/map`, {
-      state: {
-        uf: state,
-        city,
-      },
-    })
   }
 
   return (
     <Container>
       <Content>
-        <Left>
-          <header>
+        <Header>
+          <div className="logo">
             <img
               src={logoSvg}
               alt="Imagem de da caricatura do rosto de um cachorro"
             />
             <h3>FindAFriend</h3>
-          </header>
+          </div>
 
           <h1>
             Leve <br />
@@ -67,35 +60,41 @@ export function Home() {
           </h1>
 
           <p>Encontre o animal de estimação ideal para seu estilo de vida!</p>
-        </Left>
+        </Header>
 
-        <Right>
+        <Banner>
           <img className="dogs" src="/dogs.png" alt="" />
 
-          <form onSubmit={handleSubmit}>
+          <div className="footer">
             <Select
               name="state"
               label="Busque um amigo:"
               placeholder="UF"
-              options={states}
               value={state}
               updateValue={handleChangeState}
               variant="tertiary"
+              options={states}
             />
 
-            <Select
-              label=""
-              name="state"
-              placeholder="Escolha a cidade"
-              options={cities}
-              value={city}
-              updateValue={handleChangeCity}
-              variant="secondary"
-            />
+            <div style={{ flex: 1 }}>
+              <Select
+                label=""
+                name="state"
+                placeholder="Escolha a cidade"
+                options={cities}
+                value={city}
+                updateValue={handleChangeCity}
+                variant="secondary"
+              />
+            </div>
 
-            <Button disabled={!state || !city} />
-          </form>
-        </Right>
+            <Button
+              type="submit"
+              onClick={handleSearchPets}
+              disabled={!state || !city}
+            />
+          </div>
+        </Banner>
       </Content>
     </Container>
   )

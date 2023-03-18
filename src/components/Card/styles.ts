@@ -12,6 +12,8 @@ export const Container = styled.div`
   background-color: #ffffff;
   overflow: hidden;
 
+  cursor: pointer;
+
   &:hover {
     background-color: #0d3b66;
 
@@ -53,10 +55,14 @@ export const TypeIcon = styled.div`
 `
 
 export const PetImage = styled.div`
-  object-fit: cover;
+  width: 100%;
+  border-radius: 20px;
 
   img {
     width: 100%;
+    height: 135px;
+    object-fit: cover;
+    border-radius: 20px;
   }
 `
 

@@ -12,7 +12,6 @@ type SelectProps = ComponentProps<typeof FilterInput> & {
   label: string
   name: string
   placeholder: string
-  value?: string
   options: {
     value: string | number
     label: string
@@ -25,10 +24,11 @@ export function Select({
   label,
   name,
   placeholder,
-  value,
   options,
   variant = 'primary',
   updateValue,
+
+  ...rest
 }: SelectProps) {
   async function handleUpdate(event: ChangeEvent<HTMLSelectElement>) {
     await updateValue(event.target.value)
@@ -44,7 +44,7 @@ export function Select({
           id={name}
           variant={variant}
           onChange={handleUpdate}
-          value={value}
+          {...rest}
         >
           <FilterInputOption value="" defaultValue="">
             {placeholder}

@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { GeoContext } from '@/context/GeoContext'
 import { useLocation } from 'react-router-dom'
 
@@ -27,20 +27,27 @@ export function Map() {
   const location = useLocation()
   const state = location.state as IStateLocationProps
 
+  const [type, setType] = useState('')
+
   return (
     <Container>
-      <Aside stateDefault={state.uf} cityDefault={state.city} />
+      <Aside type={type} stateDefault={state.uf} cityDefault={state.city} />
 
       <Content>
         <Header>
           <p>
-            Encontre <span>{pets.length} amigos</span> na sua cidade
+            Encontre <span>{pets.length > 0 && pets.length} amigos</span> na sua
+            cidade
           </p>
           <SelectWrapper>
-            <HeaderSelect name="size" id="size">
+            <HeaderSelect
+              name="size"
+              id="size"
+              onChange={(e) => setType(e.target.value)}
+            >
               <option value="all">Gatos e Cachorros</option>
-              <option value="cats">Gatos</option>
-              <option value="dogs">Cachorros</option>
+              <option value="cat">Gatos</option>
+              <option value="dog">Cachorros</option>
             </HeaderSelect>
             <img src={chevron} alt="" />
           </SelectWrapper>
@@ -60,6 +67,3 @@ export function Map() {
     </Container>
   )
 }
-// function handleFilterByPetType() {
-//   // TO DO
-// }

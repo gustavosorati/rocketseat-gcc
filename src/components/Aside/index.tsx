@@ -83,9 +83,10 @@ const independencyOptions = [
 interface Props {
   stateDefault?: string
   cityDefault?: string
+  type: string
 }
 
-export function Aside({ stateDefault, cityDefault }: Props) {
+export function Aside({ stateDefault, cityDefault, type }: Props) {
   const { states, cities, getCities, getPets } = useContext(GeoContext)
 
   const [state, setState] = useState(stateDefault || '')
@@ -116,7 +117,9 @@ export function Aside({ stateDefault, cityDefault }: Props) {
       params += energy && `&energy=${energy}`
       params += size && `&size=${size}`
       params += independency && `&independency=${independency}`
+      params += type && `&type=${type}`
 
+      console.log(params)
       const query = params ? `${city}?${params}` : city
       await getPets(query)
     } catch (error) {}
@@ -209,11 +212,3 @@ export function Aside({ stateDefault, cityDefault }: Props) {
     </Container>
   )
 }
-
-// function handleSearchPets() {
-//   // TO DO
-// }
-
-// function handleChangeSearchFilters() {
-//   // TO DO
-// }

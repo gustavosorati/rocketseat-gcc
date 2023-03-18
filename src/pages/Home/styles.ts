@@ -4,7 +4,7 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.colors['red-200']};
   width: 100%;
   height: 100vh;
-  padding: 6.87rem; // 110px
+  padding: 6.87rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,36 +17,36 @@ export const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7rem; // 110px
+  gap: 7rem;
 `
 
-export const Left = styled.div`
+export const Header = styled.div`
   width: 480px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 580px;
 
-  header {
+  div.logo {
     display: flex;
     align-items: center;
-    gap: 0.75rem; // 12px
+    gap: 0.75rem;
 
     h3 {
-      font-size: 1.75rem; // 28px
+      font-size: 1.75rem;
     }
   }
 
   h1 {
-    font-size: 4.5rem; // 72px
+    font-size: 4.5rem;
   }
 
   p {
-    font-size: 1.5rem; // 24px
+    font-size: 1.5rem;
   }
 `
 
-export const Right = styled.div`
+export const Banner = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -59,7 +59,7 @@ export const Right = styled.div`
     margin-top: 6rem;
   }
 
-  form {
+  div.footer {
     display: flex;
     align-items: center;
     justify-content: space-between;

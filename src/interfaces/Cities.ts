@@ -1,13 +1,11 @@
-interface ICity {
-  name: string
-  code: string
+export interface ICity {
+  label: string
+  value: string
 }
 
 export interface ICitysRequest {
-  citys: ICity[]
-}
-
-export interface ICitiesDTO {
-  label: string
-  value: string
+  citys: {
+    name: string
+    code: string
+  }[]
 }
