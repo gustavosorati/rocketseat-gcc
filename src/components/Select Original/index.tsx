@@ -11,43 +11,39 @@ import {
 type SelectProps = ComponentProps<typeof FilterInput> & {
   label: string
   name: string
-  placeholder: string
-  value?: string
+  defaultText: string
   options: {
     value: string | number
     label: string
   }[]
   variant?: 'primary' | 'secondary' | 'tertiary'
-  updateValue: (value: string) => Promise<void>
+  update: (value: string) => void
 }
 
 export function Select({
   label,
   name,
-  placeholder,
-  value,
+  defaultText,
   options,
   variant = 'primary',
-  updateValue,
+  update,
 }: SelectProps) {
   async function handleUpdate(event: ChangeEvent<HTMLSelectElement>) {
-    await updateValue(event.target.value)
+    update(event.target.value)
   }
 
   return (
     <Filter variant={variant}>
       {label && <FilterLabel htmlFor={name}>{label}</FilterLabel>}
-
       <FilterWrapper variant={variant}>
         <FilterInput
           name={name}
           id={name}
           variant={variant}
           onChange={handleUpdate}
-          value={value}
         >
           <FilterInputOption value="" defaultValue="">
-            {placeholder}
+            {defaultText}
           </FilterInputOption>
           {options.map((option) => {
             return (
@@ -57,7 +53,6 @@ export function Select({
             )
           })}
         </FilterInput>
-
         <img src={chevron} alt="" />
       </FilterWrapper>
     </Filter>

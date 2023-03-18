@@ -1,57 +1,19 @@
-import { Container, Content, Left, Right } from './styles'
-import logoSvg from '../../assets/icons/logo.svg'
+import { useNavigate } from 'react-router-dom'
+import { GeoContext } from '@/context/GeoContext'
+import { FormEvent, useContext, useState } from 'react'
+
 import { Button } from '@/components/Button'
-import { FormEvent, useEffect, useState } from 'react'
-import { api } from '@/utils/api'
-import { IStateDTO, IStatesRequest } from '@/interfaces/State'
 import { Select } from '@/components/Select'
-import { ICitiesDTO, ICitysRequest } from '@/interfaces/Cities'
+
+import logoSvg from '../../assets/icons/logo.svg'
+
+import { Container, Content, Left, Right } from './styles'
 
 export function Home() {
-  const [states, setStates] = useState<IStateDTO[]>([])
-  const [cities, setCities] = useState<ICitiesDTO[]>([])
+  const { states, cities, getCities, getPets } = useContext(GeoContext)
 
   const [state, setState] = useState('')
   const [city, setCity] = useState('')
-
-  // const [pets, setPets] = useState<[]>([])
-
-  async function getStates() {
-    console.log('GET STATES =>')
-    try {
-      const response = await api.get<IStatesRequest>('/location/states')
-
-      const treatedStatesResponse = response.data.states.map((state) => {
-        return {
-          label: state.sigla,
-          value: state.sigla,
-        }
-      })
-
-      setStates(treatedStatesResponse)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  async function getCities(stateUF: string) {
-    try {
-      const response = await api.get<ICitysRequest>(
-        `/location/citys/${stateUF}`,
-      )
-
-      const treatedCitiesResponse = response.data.citys.map((city) => {
-        return {
-          label: city.name,
-          value: city.name,
-        }
-      })
-
-      setCities(treatedCitiesResponse)
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   async function handleChangeState(stateUF: string) {
     setState(stateUF)
@@ -59,7 +21,7 @@ export function Home() {
     await getCities(stateUF)
   }
 
-  function handleChangeCity(city: string) {
+  async function handleChangeCity(city: string) {
     setCity(city)
   }
 
@@ -67,34 +29,24 @@ export function Home() {
     if (!state || !city) return
 
     try {
-      console.log(city)
-      const response = await api.get(`/pets/${city}`)
-
-      console.log(response)
-      // const treatedCitiesResponse = response.data.states.map(
-      //   (state: IStateDTO) => {
-      //     return {
-      //       label: state.sigla,
-      //       value: state.sigla,
-      //     }
-      //   },
-      // )
-
-      // setStates(treatedCitiesResponse)
-    } catch (error) {
-      console.log(error)
-    }
+      await getPets(city)
+    } catch (error) {}
   }
+
+  const navigate = useNavigate()
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
     await handleSearchPets()
-  }
 
-  useEffect(() => {
-    getStates()
-  }, [])
+    navigate(`/map`, {
+      state: {
+        uf: state,
+        city,
+      },
+    })
+  }
 
   return (
     <Container>
@@ -109,7 +61,9 @@ export function Home() {
           </header>
 
           <h1>
-            Leve <br /> a felicidade <br /> para o seu lar
+            Leve <br />
+            a felicidade <br />
+            para o seu lar
           </h1>
 
           <p>Encontre o animal de estimação ideal para seu estilo de vida!</p>
@@ -122,19 +76,21 @@ export function Home() {
             <Select
               name="state"
               label="Busque um amigo:"
-              defaultText="UF"
+              placeholder="UF"
               options={states}
+              value={state}
+              updateValue={handleChangeState}
               variant="tertiary"
-              update={handleChangeState}
             />
 
             <Select
               label=""
               name="state"
-              defaultText="Escolha a cidade"
+              placeholder="Escolha a cidade"
               options={cities}
+              value={city}
+              updateValue={handleChangeCity}
               variant="secondary"
-              update={handleChangeCity}
             />
 
             <Button disabled={!state || !city} />

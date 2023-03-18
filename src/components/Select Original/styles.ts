@@ -33,7 +33,7 @@ export const FilterWrapper = styled.div<SelectProps>`
 
   & > img {
     position: absolute;
-    right: 10px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
 
@@ -47,7 +47,6 @@ export const FilterWrapper = styled.div<SelectProps>`
 `
 export const FilterInput = styled.select<SelectProps>`
   width: 100%;
-  min-width: 66px;
   height: 60px;
   font-size: 16px;
   line-height: 19.2px;
@@ -57,7 +56,7 @@ export const FilterInput = styled.select<SelectProps>`
   border-radius: 15px;
   border: none;
   outline: none;
-  padding: 20px 50px 20px 10px;
+  padding: 20px 2rem;
   appearance: none;
   position: relative;
 
@@ -71,7 +70,6 @@ export const FilterInput = styled.select<SelectProps>`
     variant === 'secondary' &&
     css`
       background-color: ${theme.colors['red-400']};
-      padding: 20px 30px 20px 10px;
       border: 1px solid #f15156;
     `}
 

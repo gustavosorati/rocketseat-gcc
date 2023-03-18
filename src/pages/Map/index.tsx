@@ -1,8 +1,11 @@
+import { useContext } from 'react'
+import { GeoContext } from '@/context/GeoContext'
+import { useLocation } from 'react-router-dom'
+
 import { Aside } from '~/Aside'
 import { Card } from '~/Card'
 
 import chevron from '@/assets/icons/chevron-bottom-blue.svg'
-import dog from '@/assets/images/dog.png'
 
 import {
   Container,
@@ -13,19 +16,25 @@ import {
   Display,
 } from './styles'
 
+interface IStateLocationProps {
+  city: string
+  uf: string
+}
+
 export function Map() {
-  function handleFilterByPetType() {
-    // TO DO
-  }
+  const { pets } = useContext(GeoContext)
+
+  const location = useLocation()
+  const state = location.state as IStateLocationProps
 
   return (
     <Container>
-      <Aside />
+      <Aside stateDefault={state.uf} cityDefault={state.city} />
 
       <Content>
         <Header>
           <p>
-            Encontre <span>324 amigos</span> na sua cidade
+            Encontre <span>{pets.length} amigos</span> na sua cidade
           </p>
           <SelectWrapper>
             <HeaderSelect name="size" id="size">
@@ -37,16 +46,20 @@ export function Map() {
           </SelectWrapper>
         </Header>
         <Display>
-          <Card path={dog} type="dog" name="Alfredo" />
-          <Card path={dog} type="cat" name="Tobia" />
-          <Card path={dog} type="dog" name="Alfredo" />
-          <Card path={dog} type="cat" name="Tobia" />
-          <Card path={dog} type="dog" name="Alfredo" />
-          <Card path={dog} type="cat" name="Tobia" />
-          <Card path={dog} type="dog" name="Alfredo" />
-          <Card path={dog} type="cat" name="Tobia" />
+          {pets &&
+            pets.map((pet) => (
+              <Card
+                key={pet.id}
+                path={pet.photo_url}
+                type={pet.type}
+                name={pet.name}
+              />
+            ))}
         </Display>
       </Content>
     </Container>
   )
 }
+// function handleFilterByPetType() {
+//   // TO DO
+// }

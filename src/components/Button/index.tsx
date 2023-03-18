@@ -1,13 +1,14 @@
 import { Button as StyledButton } from './styles'
 import search from '@/assets/icons/search.svg'
+import { ComponentProps } from 'react'
 
-type Props = {
+type Props = ComponentProps<typeof StyledButton> & {
   disabled?: boolean
 }
 
-export function Button({ disabled = false }: Props) {
+export function Button({ disabled = false, ...rest }: Props) {
   return (
-    <StyledButton isDisabled={disabled}>
+    <StyledButton isDisabled={disabled} {...rest}>
       <img src={search} alt="ícone de lupa" />
     </StyledButton>
   )
