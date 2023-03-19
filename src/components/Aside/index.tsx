@@ -108,7 +108,6 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
   }
 
   async function handleSearchPets() {
-    console.log('HANDLE SEARCH PETS')
     if (!state || !city) return
 
     try {

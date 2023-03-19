@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useEffect, useState } from 'react'
 
-import { api } from '@/utils/api'
+import { api } from '@/services/http'
 
 import { IPets, IRequestPets } from '@/interfaces/IPets'
 import { ICity, ICitysRequest } from '@/interfaces/Cities'
