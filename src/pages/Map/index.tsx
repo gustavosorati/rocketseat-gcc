@@ -1,31 +1,18 @@
-import { useContext, useState } from 'react'
-import { GeoContext } from '@/context/GeoContext'
-import { useLocation } from 'react-router-dom'
-
-import { Aside } from '~/Aside'
-import { Card } from '~/Card'
-
-import chevron from '@/assets/icons/chevron-bottom-blue.svg'
+import { useState } from 'react'
 
 import * as Styled from './styles'
-
-interface IStateLocationProps {
-  city: string
-  uf: string
-}
+import { IPets } from '@/interfaces/IPets'
+import chevron from '@/assets/icons/chevron-bottom-blue.svg'
+import { Card } from '@/components/Card'
+import { Aside } from '@/components/Aside'
 
 export function Map() {
-  const { pets } = useContext(GeoContext)
-
-  const location = useLocation()
-  const state = location.state as IStateLocationProps
-
+  const [pets, setPets] = useState<IPets[]>([])
   const [type, setType] = useState('')
 
-  console.log(pets)
   return (
     <Styled.Container>
-      <Aside type={type} stateDefault={state.uf} cityDefault={state.city} />
+      <Aside type={type} updatePets={setPets} />
 
       <Styled.Content>
         <Styled.Header>

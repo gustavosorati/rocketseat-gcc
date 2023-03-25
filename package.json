@@ -17,6 +17,7 @@
     "react-helmet": "^6.1.0",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.9.0",
+    "react-toastify": "^9.1.2",
     "styled-components": "^5.3.8",
     "vite-tsconfig-paths": "^4.0.5"
   },

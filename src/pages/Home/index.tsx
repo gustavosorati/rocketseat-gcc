@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { GeoContext } from '@/context/GeoContext'
-import { useContext, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/Button'
 
@@ -8,18 +7,28 @@ import logoSvg from '../../assets/icons/logo.svg'
 
 import { Container, Content, Header, Banner } from './styles'
 import { Select } from '@/components/Select'
+import { IGenericStateAndCitys } from '@/interfaces/State'
+import { getStates } from '@/helpers/get-states'
+import { getCitiesByState } from '@/helpers/get-cities-by-state'
 
 export function Home() {
   const navigate = useNavigate()
-  const { states, cities, getCities, getPets } = useContext(GeoContext)
+  const [states, setStates] = useState<IGenericStateAndCitys[]>([])
+  const [cities, setCities] = useState<IGenericStateAndCitys[]>([])
 
   const [state, setState] = useState('')
   const [city, setCity] = useState('')
 
-  async function handleChangeState(stateUF: string) {
-    setState(stateUF)
+  // const [, setParams] = useSearchParams()
 
-    await getCities(stateUF)
+  async function handleChangeState(uf: string) {
+    setState(uf)
+
+    const response = await getCitiesByState(uf)
+
+    if (response) {
+      setCities(response)
+    }
   }
 
   async function handleChangeCity(city: string) {
@@ -29,17 +38,24 @@ export function Home() {
   async function handleSearchPets() {
     if (!state || !city) return
 
-    try {
-      await getPets(city)
-
-      navigate(`/map`, {
-        state: {
-          uf: state,
-          city,
-        },
-      })
-    } catch (error) {}
+    // setParams({
+    //   uf: state,
+    //   city,
+    // })
+    navigate(`/map?uf=${state}&city=${city}`)
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getStates()
+
+      if (response) {
+        setStates(response)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <Container>

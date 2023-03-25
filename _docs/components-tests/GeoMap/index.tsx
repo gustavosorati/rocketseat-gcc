@@ -3,7 +3,7 @@ import * as Styled from './styles'
 import { Marker, TileLayer } from 'react-leaflet'
 import { renderToString } from 'react-dom/server'
 import { divIcon } from 'leaflet'
-import { api } from '@/services/http'
+import { api } from '../../../src/services/http'
 
 interface Props {
   cep: string
@@ -46,6 +46,26 @@ export function GeoMap({ cep }: Props) {
 
     getCoordinates()
   }, [cep])
+
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/leaflet@1.9.3/dist/leaflet.js'
+    script.integrity = 'sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM='
+    script.crossOrigin = ''
+    document.body.appendChild(script)
+
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = 'https://unpkg.com/leaflet@1.9.3/dist/leaflet.css'
+    link.integrity = 'sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI='
+    link.crossOrigin = ''
+    document.head.appendChild(link)
+
+    return () => {
+      document.body.removeChild(script)
+      document.head.removeChild(link)
+    }
+  }, [])
 
   if (isLoading) return <p>Carregando</p>
 

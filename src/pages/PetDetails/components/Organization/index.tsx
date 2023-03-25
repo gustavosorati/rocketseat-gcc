@@ -1,4 +1,4 @@
-import { phoneFormatter } from '@/utils/formatter'
+import { phoneFormatter } from '@/helpers/formatter'
 
 import { IOrg } from '@/interfaces/Org'
 
@@ -34,7 +34,9 @@ export function Organization({ organization }: Props) {
           className="btn-whats"
         >
           <WhatsappLogo size={24} weight="fill" />
-          {phoneFormatter(phoneNumber)}
+          <Text size="18px" weight={600}>
+            {phoneFormatter(phoneNumber)}
+          </Text>
         </Styled.Contact>
       </div>
     </Styled.Container>

@@ -17,3 +17,8 @@ export interface IStateDTO {
   label: string
   value: string
 }
+
+export interface IGenericStateAndCitys {
+  label: string
+  value: string
+}

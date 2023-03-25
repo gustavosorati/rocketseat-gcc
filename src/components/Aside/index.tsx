@@ -1,106 +1,61 @@
-import { useContext, useState } from 'react'
-import { GeoContext } from '@/context/GeoContext'
+import { AxiosError } from 'axios'
+import { toast } from 'react-toastify'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+
+import { api } from '@/services/http'
+import { getStates } from '@/helpers/get-states'
+import { getCitiesByState } from '@/helpers/get-cities-by-state'
+import { buildQuery, buildQueryParams } from '@/helpers/build-query-params'
+
+import { IGenericStateAndCitys } from '@/interfaces/State'
+import { IPets, IRequestPets } from '@/interfaces/IPets'
 
 import { Select } from '@/components/Select'
-import { Button } from '../Button'
+import { Button } from '@/components/Button'
 
 import logo from '@/assets/icons/logo.svg'
 
-import {
-  Container,
-  AsideHeader,
-  HeaderInput,
-  AsideContent,
-  ContentHeader,
-  ContentFilters,
-} from './styles'
+import * as Styled from './styles'
 
-const ageOptions = [
-  {
-    label: 'Filhote',
-    value: 'cub',
-  },
-  {
-    label: 'Adolescente',
-    value: 'adolescent',
-  },
-  {
-    label: 'Idoso',
-    value: 'elderly',
-  },
-]
-const energyOptions = [
-  {
-    label: 'Muito baixa',
-    value: 1,
-  },
-  {
-    label: 'Baixa',
-    value: 2,
-  },
-  {
-    label: 'Média',
-    value: 3,
-  },
-  {
-    label: 'Alta',
-    value: 4,
-  },
-  {
-    label: 'Muito alta',
-    value: 5,
-  },
-]
-const sizeOptions = [
-  {
-    label: 'Pequenino',
-    value: 'small',
-  },
-  {
-    label: 'Médio',
-    value: 'medium',
-  },
-  {
-    label: 'Grande',
-    value: 'big',
-  },
-]
-const independencyOptions = [
-  {
-    label: 'Baixo',
-    value: 'low',
-  },
-  {
-    label: 'Médio',
-    value: 'medium',
-  },
-  {
-    label: 'Alto',
-    value: 'high',
-  },
-]
+import {
+  ageOptions,
+  energyOptions,
+  independencyOptions,
+  sizeOptions,
+} from './schemas/options-schema'
 
 interface Props {
-  stateDefault?: string
-  cityDefault?: string
   type: string
+  updatePets: (pets: IPets[]) => void
 }
 
-export function Aside({ stateDefault, cityDefault, type }: Props) {
-  const { states, cities, getCities, getPets } = useContext(GeoContext)
+export function Aside({ type, updatePets }: Props) {
+  const [search] = useSearchParams()
 
-  const [state, setState] = useState(stateDefault || '')
-  const [city, setCity] = useState(cityDefault || '')
+  const [states, setStates] = useState<IGenericStateAndCitys[]>([])
+  const [statesLoaded, setStatesLoaded] = useState(false)
 
-  const [age, setAge] = useState('')
-  const [energy, setEnergy] = useState('')
-  const [size, setSize] = useState('')
-  const [independency, setIndependency] = useState('')
+  const [cities, setCities] = useState<IGenericStateAndCitys[]>([])
+  const [citiesLoaded, setCitiesLoaded] = useState(false)
 
-  async function handleChangeState(stateUF: string) {
-    setState(stateUF)
+  const [state, setState] = useState('')
+  const [city, setCity] = useState('')
 
-    await getCities(stateUF)
+  const [filters, setFilters] = useState({
+    age: '',
+    energy: '',
+    size: '',
+    independency: '',
+  })
+
+  async function handleChangeState(uf: string) {
+    const response = await getCitiesByState(uf)
+
+    if (response) {
+      setState(uf)
+      setCities(response)
+    }
   }
 
   async function handleChangeCity(city: string) {
@@ -111,25 +66,75 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
     if (!state || !city) return
 
     try {
-      let params = ''
-      params += age && `age=${age}`
-      params += energy && `&energy=${energy}`
-      params += size && `&size=${size}`
-      params += independency && `&independency=${independency}`
-      params += type && `&type=${type}`
+      const params = buildQueryParams(filters, type)
+      const query = buildQuery(city, params)
 
-      console.log(params)
-      const query = params ? `${city}?${params}` : city
-      await getPets(query)
-    } catch (error) {}
+      const response = await api.get<IRequestPets>(`/pets/${query}`)
+      const pets = response.data.pets
+
+      updatePets(pets)
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast(error.message)
+      }
+      console.log(error)
+    }
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getStates()
+
+      if (response) {
+        setStates(response)
+        setStatesLoaded(true)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    if (statesLoaded) {
+      const getCities = async () => {
+        const searchUF = search.get('uf')
+
+        if (searchUF) {
+          setState(searchUF)
+          const response = await getCitiesByState(searchUF)
+
+          if (response) {
+            setCities(response)
+            setCitiesLoaded(true)
+          }
+        }
+      }
+      getCities()
+    }
+  }, [search, statesLoaded])
+
+  useEffect(() => {
+    if (citiesLoaded) {
+      const searchCity = search.get('city')
+
+      if (searchCity) {
+        setCity(searchCity)
+
+        api.get<IRequestPets>(`/pets/${searchCity}`).then((response) => {
+          const pets = response.data.pets
+
+          updatePets(pets)
+        })
+      }
+    }
+  }, [citiesLoaded, search, updatePets])
+
   return (
-    <Container>
-      <AsideHeader>
+    <Styled.Container>
+      <Styled.AsideHeader>
         <div>
           <img className="logo" src={logo} alt="" />
-          <HeaderInput>
+          <Styled.HeaderInput>
             <Select
               label=""
               name="state"
@@ -142,7 +147,7 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
 
             <Select
               label=""
-              name="state"
+              name="city"
               placeholder="Selecione"
               value={city}
               options={cities}
@@ -155,21 +160,22 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
               disabled={!state || !city}
               onClick={handleSearchPets}
             />
-          </HeaderInput>
+          </Styled.HeaderInput>
         </div>
-      </AsideHeader>
+      </Styled.AsideHeader>
 
-      <AsideContent>
-        <ContentHeader>Filtros</ContentHeader>
-        <ContentFilters>
+      <Styled.AsideContent>
+        <Styled.ContentHeader>Filtros</Styled.ContentHeader>
+        <Styled.ContentFilters>
           <Select
             name="age"
             label="Idade"
             placeholder="Escolha a idade"
-            value={age}
+            value={filters.age}
             options={ageOptions}
             updateValue={async (e) => {
-              setAge(e)
+              const updatedFilters = { ...filters, age: e }
+              setFilters(updatedFilters)
             }}
           />
 
@@ -179,9 +185,10 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
             placeholder="Escolha a energia"
             options={energyOptions}
             variant="primary"
-            value={energy}
+            value={filters.energy}
             updateValue={async (e) => {
-              setEnergy(e)
+              const updatedFilters = { ...filters, energy: e }
+              setFilters(updatedFilters)
             }}
           />
 
@@ -190,9 +197,10 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
             label="Porte do animal"
             placeholder="Escolha o porte"
             options={sizeOptions}
-            value={size}
+            value={filters.size}
             updateValue={async (e) => {
-              setSize(e)
+              const updatedFilters = { ...filters, size: e }
+              setFilters(updatedFilters)
             }}
           />
 
@@ -201,13 +209,14 @@ export function Aside({ stateDefault, cityDefault, type }: Props) {
             label="Nível de independência"
             placeholder="Escolha a independência"
             options={independencyOptions}
-            value={independency}
+            value={filters.independency}
             updateValue={async (e) => {
-              setIndependency(e)
+              const updatedFilters = { ...filters, independency: e }
+              setFilters(updatedFilters)
             }}
           />
-        </ContentFilters>
-      </AsideContent>
-    </Container>
+        </Styled.ContentFilters>
+      </Styled.AsideContent>
+    </Styled.Container>
   )
 }

@@ -41,4 +41,8 @@ export const Contact = styled(Link)`
 
   text-decoration: none;
   color: ${({ theme }) => theme.colors['blue-600']};
+
+  &:hover {
+    filter: hue-rotate(294deg);
+  }
 `
