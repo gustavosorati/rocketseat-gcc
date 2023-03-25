@@ -3,14 +3,15 @@ import logo from '@/assets/icons/logo.svg'
 import { Container, Name, PetImage, TypeIcon } from './styles'
 
 type CardProps = {
+  id: string
   path: string
   name: string
   type: 'dog' | 'cat'
 }
 
-export function Card({ path, name, type }: CardProps) {
+export function Card({ id, path, name, type }: CardProps) {
   return (
-    <Container>
+    <Container href={`/pet/${id}`}>
       <PetImage>
         <img src={path} alt={`Foto de ${name}`} />
       </PetImage>

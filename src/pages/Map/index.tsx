@@ -7,14 +7,7 @@ import { Card } from '~/Card'
 
 import chevron from '@/assets/icons/chevron-bottom-blue.svg'
 
-import {
-  Container,
-  Content,
-  SelectWrapper,
-  Header,
-  HeaderSelect,
-  Display,
-} from './styles'
+import * as Styled from './styles'
 
 interface IStateLocationProps {
   city: string
@@ -29,18 +22,19 @@ export function Map() {
 
   const [type, setType] = useState('')
 
+  console.log(pets)
   return (
-    <Container>
+    <Styled.Container>
       <Aside type={type} stateDefault={state.uf} cityDefault={state.city} />
 
-      <Content>
-        <Header>
+      <Styled.Content>
+        <Styled.Header>
           <p>
             Encontre <span>{pets.length > 0 && pets.length} amigos</span> na sua
             cidade
           </p>
-          <SelectWrapper>
-            <HeaderSelect
+          <Styled.SelectWrapper>
+            <Styled.HeaderSelect
               name="size"
               id="size"
               onChange={(e) => setType(e.target.value)}
@@ -48,22 +42,24 @@ export function Map() {
               <option value="all">Gatos e Cachorros</option>
               <option value="cat">Gatos</option>
               <option value="dog">Cachorros</option>
-            </HeaderSelect>
+            </Styled.HeaderSelect>
             <img src={chevron} alt="" />
-          </SelectWrapper>
-        </Header>
-        <Display>
+          </Styled.SelectWrapper>
+        </Styled.Header>
+
+        <Styled.Display>
           {pets &&
             pets.map((pet) => (
               <Card
                 key={pet.id}
+                id={pet.id}
                 path={pet.photo_url}
                 type={pet.type}
                 name={pet.name}
               />
             ))}
-        </Display>
-      </Content>
-    </Container>
+        </Styled.Display>
+      </Styled.Content>
+    </Styled.Container>
   )
 }

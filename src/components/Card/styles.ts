@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const Container = styled.div`
+export const Container = styled.a`
   max-width: 280px;
   width: 100%;
   display: flex;
