@@ -61,14 +61,25 @@ export const FormWrapper = styled.div`
   }
 `
 
-export const InputWrapper = styled.div`
+interface InputWrapperProps {
+  error: string | undefined
+}
+
+export const InputWrapper = styled.div<InputWrapperProps>`
   display: flex;
   width: 100%;
 
   background-color: #f5f8fa;
-  border: 1px solid #d3e2e5;
+  border: 1px solid
+    ${({ error, theme }) => (error ? theme.colors['red-400'] : '#d3e2e5')};
   border-radius: 10px;
   padding: 18px;
+`
+
+export const InputError = styled.p`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors['red-200']};
+  height: 16px;
 `
 
 export const Form = styled.form`

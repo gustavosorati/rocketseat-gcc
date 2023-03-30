@@ -51,34 +51,25 @@ export function GeoMap({ cep }: Props) {
 
   return (
     <>
-      <Styled.Wrapper>
-        <Styled.MapContainer
-          id="map"
-          center={[Number(coordinates.latitude), Number(coordinates.longitude)]}
-          zoom={16}
-          zoomControl={false}
-          scrollWheelZoom={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="">OpenStreetMap</a> contributors'
-            url={`https://maps.geoapify.com/v1/tile/positron/{z}/{x}/{y}.png?&apiKey=b03a45222f3c4983b87d57a8eb5d2ae3`}
-          />
-          <Marker
-            position={[
-              Number(coordinates.latitude),
-              Number(coordinates.longitude),
-            ]}
-            icon={customMarkerIcon}
-          />
-        </Styled.MapContainer>
-
-        <Styled.LinkRedirect
-          to={`https://maps.google.com/?q=${coordinates.latitude},${coordinates.longitude}`}
-          target="_blank"
-        >
-          Ver rotas no Google Maps
-        </Styled.LinkRedirect>
-      </Styled.Wrapper>
+      <Styled.MapContainer
+        id="map"
+        center={[Number(coordinates.latitude), Number(coordinates.longitude)]}
+        zoom={14}
+        zoomControl={false}
+        scrollWheelZoom={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="">OpenStreetMap</a> contributors'
+          url={`https://maps.geoapify.com/v1/tile/positron/{z}/{x}/{y}.png?&apiKey=b03a45222f3c4983b87d57a8eb5d2ae3`}
+        />
+        <Marker
+          position={[
+            Number(coordinates.latitude),
+            Number(coordinates.longitude),
+          ]}
+          icon={customMarkerIcon}
+        />
+      </Styled.MapContainer>
     </>
   )
 }

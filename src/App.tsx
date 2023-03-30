@@ -5,15 +5,18 @@ import { ThemeProvider } from 'styled-components'
 import { defaultTheme } from './styles/theme'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
+import { OrganizationProvider } from './context/OrganizationContext'
 
 function App() {
   return (
     <>
       <ThemeProvider theme={defaultTheme}>
-        <BrowserRouter>
-          <Router />
-          <ToastContainer />
-        </BrowserRouter>
+        <OrganizationProvider>
+          <BrowserRouter>
+            <Router />
+            <ToastContainer />
+          </BrowserRouter>
+        </OrganizationProvider>
 
         <GlobalStyles />
       </ThemeProvider>

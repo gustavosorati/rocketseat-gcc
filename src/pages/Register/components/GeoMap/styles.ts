@@ -2,23 +2,11 @@ import styled from 'styled-components'
 import { MapContainer as ContainerLeaflet } from 'react-leaflet'
 import { Link } from 'react-router-dom'
 
-export const Wrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors['blue-600']};
-  border-radius: 20px;
-  border: 2px solid #dde3f0;
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 40px;
-`
-
 export const MapContainer = styled(ContainerLeaflet)`
   width: 100%;
-  height: 227px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  border-bottom: 3px solid #dde3f0;
+  height: 180px;
+  border-radius: 20px;
+  border: 3px dashed rgba(13, 59, 102, 0.7);
 
   .leaflet-control-attribution {
     display: none;

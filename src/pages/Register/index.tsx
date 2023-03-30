@@ -7,10 +7,12 @@ import {
   InputWrapper,
   Buttons,
   Button,
+  InputError,
 } from './styles'
 
 import pets from '../../assets/dogs.png'
-import Eye from '../../assets/icons/password-eye.svg'
+import EyeHidden from '../../assets/icons/password-eye.svg'
+import Eye from '../../assets/icons/password.svg'
 import LogoHorizontal from '../../assets/icons/logo-title.svg'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
@@ -19,20 +21,21 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { cepFormatter, inputPhoneFormatter } from '@/helpers/formatter'
 import { api } from '@/services/http'
 import { ChangeEvent, useState } from 'react'
+import { GeoMap } from './components/GeoMap'
 
 const registerFormSchema = z
   .object({
-    name: z.string(),
+    name: z.string().min(3),
     email: z.string().email(),
     cep: z.string().min(9),
-    address: z.string(),
+    address: z.string().min(5),
     contact: z.string().min(13),
-    password: z.string(),
-    confirmPassword: z.string(),
+    password: z.string().min(4),
+    confirmPassword: z.string().min(4),
   })
   .refine((data) => data.confirmPassword === data.password, {
     message: "Passwords don't match",
-    path: ['confirm'], // path of error
+    path: ['password', 'confirmPassword'], // path of error
   })
 
 type RegisterForm = z.infer<typeof registerFormSchema>
@@ -40,20 +43,18 @@ type RegisterForm = z.infer<typeof registerFormSchema>
 export function Register() {
   const {
     register,
-    formState: { errors, isSubmitted },
+    formState: { errors },
     handleSubmit,
     setValue,
+    watch,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerFormSchema),
   })
-  const [coordenates, setCoordanates] = useState('')
+  const [passwordVisible, setPasswordVisible] = useState(false)
+  const [confirmVisible, setConfirmVisible] = useState(false)
 
   async function handleRegisterOrganization(body: RegisterForm) {
-    console.log(body)
-
     try {
-      console.log('entrou')
-
       await api.post('/orgs', {
         name: body.name,
         email: body.email,
@@ -71,19 +72,11 @@ export function Register() {
   async function handleRenderMapLocation(e: ChangeEvent<HTMLInputElement>) {
     const formattedCep = cepFormatter(e.target.value)
     setValue('cep', formattedCep)
-
-    if (formattedCep.length === 9) {
-      try {
-        const response = await api.get(`/location/coordinates/${formattedCep}`)
-        console.log(`/location/coordinates/${formattedCep}`)
-
-        console.log(response.data)
-      } catch (error) {
-        console.log(error)
-      }
-    }
   }
 
+  const cep = watch('cep') ?? ''
+
+  console.log(errors)
   return (
     <Wrapper>
       <Container>
@@ -96,91 +89,122 @@ export function Register() {
           <h1>Cadastre sua organização</h1>
 
           <Form onSubmit={handleSubmit(handleRegisterOrganization)}>
-            <label htmlFor="name">Nome</label>
-            <InputWrapper>
-              <input
-                type="text"
-                id="name"
-                placeholder="Informe o seu nome"
-                {...register('name')}
-              />
-            </InputWrapper>
+            <div>
+              <label htmlFor="name">Nome</label>
+              <InputWrapper error={errors.name?.message}>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Informe o seu nome"
+                  {...register('name')}
+                />
+              </InputWrapper>
+              <InputError>{errors.name?.message}</InputError>
+            </div>
 
-            <label htmlFor="email">Email</label>
-            <InputWrapper>
-              <input
-                type="text"
-                id="email"
-                placeholder="Informe o seu email"
-                {...register('email')}
-              />
-            </InputWrapper>
+            <div>
+              <label htmlFor="email">Email</label>
+              <InputWrapper error={errors.email?.message}>
+                <input
+                  type="text"
+                  id="email"
+                  placeholder="Informe o seu email"
+                  {...register('email')}
+                />
+              </InputWrapper>
+              <InputError>{errors.email?.message}</InputError>
+            </div>
 
-            <label htmlFor="cep">CEP</label>
-            <InputWrapper>
-              <input
-                type="text"
-                id="cep"
-                maxLength={9}
-                {...register('cep', {
-                  onChange: handleRenderMapLocation,
-                })}
-              />
-            </InputWrapper>
+            <div>
+              <label htmlFor="cep">CEP</label>
+              <InputWrapper error={errors.cep?.message}>
+                <input
+                  type="text"
+                  id="cep"
+                  maxLength={9}
+                  placeholder="XXXXX-XXX"
+                  {...register('cep', {
+                    onChange: handleRenderMapLocation,
+                  })}
+                />
+              </InputWrapper>
+              <InputError>{errors.cep?.message}</InputError>
+            </div>
 
-            <label htmlFor="address">Endereço</label>
-            <InputWrapper>
-              <input
-                type="text"
-                id="address"
-                placeholder="Rua do Meio, 1825"
-                {...register('address')}
-              />
-            </InputWrapper>
+            <div>
+              <label htmlFor="address">Endereço</label>
+              <InputWrapper error={errors.address?.message}>
+                <input
+                  type="text"
+                  id="address"
+                  placeholder="Rua do Meio, 1825"
+                  {...register('address')}
+                />
+              </InputWrapper>
+              <InputError>{errors.address?.message}</InputError>
+            </div>
 
-            {/* mapa aqui */}
-            {/*  */}
+            {cep.length === 9 && <GeoMap cep={cep} />}
 
-            <label htmlFor="contact">Whatsapp</label>
-            <InputWrapper>
-              <input
-                type="text"
-                id="contact"
-                placeholder="99 99999 9999"
-                maxLength={13}
-                {...register('contact', {
-                  onChange: (e) => {
-                    const formattedContact = inputPhoneFormatter(e.target.value)
-                    setValue('contact', formattedContact)
-                  },
-                })}
-              />
-            </InputWrapper>
+            <div>
+              <label htmlFor="contact">Whatsapp</label>
+              <InputWrapper error={errors.contact?.message}>
+                <input
+                  type="text"
+                  id="contact"
+                  placeholder="99 99999 9999"
+                  maxLength={13}
+                  {...register('contact', {
+                    onChange: (e) => {
+                      const formattedContact = inputPhoneFormatter(
+                        e.target.value,
+                      )
+                      setValue('contact', formattedContact)
+                    },
+                  })}
+                />
+              </InputWrapper>
+              <InputError>{errors.contact?.message}</InputError>
+            </div>
 
-            <label htmlFor="password">Senha</label>
-            <InputWrapper>
-              <input
-                type="password"
-                id="password"
-                placeholder="Senha"
-                {...register('password')}
-              />
-              <img onClick={() => {}} src={Eye} alt="" />
-            </InputWrapper>
+            <div>
+              <label htmlFor="password">Senha</label>
+              <InputWrapper error={errors.password?.message}>
+                <input
+                  type={`${passwordVisible ? 'text' : 'password'}`}
+                  id="password"
+                  placeholder="Senha"
+                  {...register('password')}
+                />
+                <img
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  src={`${passwordVisible ? EyeHidden : Eye}`}
+                  alt=""
+                />
+              </InputWrapper>
+              <InputError>{errors.password?.message}</InputError>
+            </div>
 
-            <label htmlFor="confirmPassword">Confirmar senha</label>
-            <InputWrapper>
-              <input
-                type="password"
-                id="confirmPassword"
-                placeholder="Confirme sua senha"
-                {...register('confirmPassword')}
-              />
-              <img onClick={() => {}} src={Eye} alt="" />
-            </InputWrapper>
+            <div>
+              <label htmlFor="confirmPassword">Confirmar senha</label>
+              <InputWrapper error={errors.confirmPassword?.message}>
+                <input
+                  type={`${confirmVisible ? 'text' : 'password'}`}
+                  id="confirmPassword"
+                  placeholder="Confirme sua senha"
+                  {...register('confirmPassword')}
+                />
+                <img
+                  onClick={() => setConfirmVisible(!confirmVisible)}
+                  src={`${confirmVisible ? EyeHidden : Eye}`}
+                  alt=""
+                />
+              </InputWrapper>
+              <InputError>{errors.confirmPassword?.message}</InputError>
+            </div>
 
             <Buttons>
-              <Button type="submit" onClick={() => {}} className="primary">
+              <Button type="submit" className="primary">
                 Cadastrar
               </Button>
             </Buttons>
